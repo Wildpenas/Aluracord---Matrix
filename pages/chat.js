@@ -13,15 +13,16 @@ export default function ChatPage() {
     
     const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
-    React.useEffect(() =>{
-        supabaseClient
-            .from('mensagem')
-                .select('*')
-                    .then(({data}) =>{
-                        console.log("dados da consulta: ", data)
-                        setListaDeMensagens(data)
-                    })
-    }, [])
+    React.useEffect(() => {
+      supabaseClient
+        .from('mensagens')
+        .select('*')
+        .order('id', { ascending: false })
+        .then(({ data }) => {
+          console.log('Dados da consulta:', data);
+          setListaDeMensagens(data);
+        });
+    }, []);
     /*
     // Usuário
     - Usuário digita no campo textarea
@@ -40,9 +41,18 @@ export default function ChatPage() {
             texto: novaMensagem,
         };
 
-        supabaseClient.from('mensagem').order('id', {ascending: false}).insert([mensagem]).then((data) =>{console.log("criando mensagem: ", data);
-            setListaDeMensagens([data[0],...listaDeMensagens]);
-        });
+        supabaseClient
+        .from('mensagem')
+        .insert([
+            mensagem
+        ])
+        .then((data) =>{
+            console.log("criando mensagem: ", data)
+            setListaDeMensagens([
+               data[0],
+                ...listaDeMensagens,
+            ]);
+        })
 
         setMensagem('');
     }
@@ -163,19 +173,18 @@ function MessageList(props) {
                 marginBottom: '16px',
             }}
         >
-            {props.mensagens.map((mensagem) => {
-                return (
+                  {props.mensagens.map((mensagem) => {
+                    return (
                     <Text
                         key={mensagem.id}
                         tag="li"
-                        styleSheet={{
-                            borderRadius: '5px',
-                            padding: '6px',
-                            marginBottom: '12px',
-                            hover: {
-                                backgroundColor: appConfig.theme.colors.neutrals[700],
-                            }
-                        }}
+                        styleSheet={{             borderRadius: '5px',
+                        padding: '6px',
+                        marginBottom: '12px',
+                        hover: {
+                        backgroundColor: appConfig.theme.colors.neutrals[700],
+                        }
+                    }}
                     >
                         <Box
                             styleSheet={{
